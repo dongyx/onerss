@@ -12,14 +12,14 @@ hxpipe:
 	@if ! which $@ >/dev/null; then \
 		echo Can\'t find $@.; \
 		echo Please install HTML-XML-utils '<https://www.w3.org/Tools/HTML-XML-utils>.'; \
-		exit -1; \
+		exit -- -1; \
 	fi
 
 hxunpipe:
 	@if ! which $@ >/dev/null; then \
 		echo Can\'t find $@.; \
 		echo Please install HTML-XML-utils '<https://www.w3.org/Tools/HTML-XML-utils>.'; \
-		exit -1; \
+		exit -- -1; \
 	fi
 
 clean:

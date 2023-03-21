@@ -40,7 +40,7 @@ while getopts pt:d:l: opt; do
 	t)	ch_title="$OPTARG";;
 	d)	ch_desc="$OPTARG";;
 	l)	ch_link="$OPTARG";;
-	?)	help >&2; exit -1;;
+	?)	help >&2; exit -- -1;;
 	esac
 done
 shift $((OPTIND - 1))
@@ -53,7 +53,7 @@ if [ $# -eq 0 ]; then
 	n=$(hxpipe | awk -v "d=$d" '
 		BEGIN { n = 0 }
 		/^\(channel$/ { if (n++ > 0) close (d"/"n)}
-		/^\(channel$/, /^)channel$/ { print >> (d"/"n) }
+		/^\(channel$/, /^\)channel$/ { print >> (d"/"n) }
 		END { print n }
 	')
 	set -- $(seq $n | xargs printf " $d/%s")
@@ -87,15 +87,15 @@ for file; do
 			/^\(/ { lvl++ }
 			/^\)/ { lvl-- }
 			/^\(title$/ { title = 1 }
-			/^)title$/ { title = 0 }
+			/^\)title$/ { title = 0 }
 			title && lvl == 2 && /^-/ { print substr($0, 2); exit }
 		'
 	)"
 	"$preproc" "$file" |
-	awk '/^\(item$/, /^)item$/' |
+	awk '/^\(item$/, /^\)item$/' |
 	awk -v chan="$chan" -v prepend="$prepend" '
 		/^\(title$/ { title = 1 }
-		/^)title$/ { title = 0 }
+		/^\)title$/ { title = 0 }
 		title && prepend && /^-/ { $0 = "-" chan ": " substr($0, 2) }
 		1
 	'
