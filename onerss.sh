@@ -17,6 +17,7 @@ Options:
 -t <title>	set title of merged channel
 -d <desc>	set description of merged channel
 -l <link>	set link of merged channel
+-D	delete pubDate elements of items
 .
 }
 
@@ -38,21 +39,24 @@ cleanxml()
 # remain only wanted elements in hxpiped-cleanxmled rss
 cleanrss()
 {
-	awk '
+	awk -v nodate="$nodate" '
 		function join(a,	i, s) {
 			for (i = 0; i < n; i++)
 				s = s a[i]
 			return s
 		}
 		BEGIN {
-			split(	"<rss><channel><title>\n" \
+			allowpaths = \
+				"<rss><channel><title>\n" \
 				"<rss><channel><item><title>\n" \
 				"<rss><channel><item><link>\n" \
 				"<rss><channel><item><description>\n" \
 				"<rss><channel><item><guid>\n" \
-				"<rss><channel><item><pubDate>\n" \
-				"<rss><channel><item><author>\n",
-				allow)
+				"<rss><channel><item><author>\n"
+			if (!nodate)
+				allowpaths = allowpaths \
+					"<rss><channel><item><pubDate>\n"
+			split(allowpaths, allow)
 		}
 		/^\(/ {
 			stack[n++] = "<" substr($0, 2) ">"
@@ -77,12 +81,14 @@ ch_title="OneRSS"
 ch_desc="Merged Channel"
 ch_link="https://github.com/dongyx/onerss"
 prepend=0
-while getopts pt:d:l: opt; do
+nodate=0
+while getopts pt:d:l:D opt; do
 	case $opt in
 	p)	prepend=1;;
 	t)	ch_title="$OPTARG";;
 	d)	ch_desc="$OPTARG";;
 	l)	ch_link="$OPTARG";;
+	D)	nodate=1;;
 	?)	help >&2; exit -- -1;;
 	esac
 done

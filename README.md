@@ -71,6 +71,16 @@ The `onerss` program prints the merged feed to the standard output.
 	Thus applying `onerss` to a single feed with the `-t` option renames the feed.
 	Then we pipe renamed feeds to another `onerss` process for merging.
 
+- Rename sub-feeds by group
+
+	~~~
+	(
+		onerss -t GroupName1 feed1a.xml feed1b.xml
+		onerss -t GroupName2 feed2a.xml feed2b.xml
+
+	) | onerss -pt 'Merged News'
+	~~~
+
 - Merge Atom feeds and RSS feeds
 
 	The `onerss` program doesn't support Atom naively.
@@ -109,6 +119,7 @@ Usage
 		-t <title>  set title of merged channel
 		-d <desc>   set description of merged channel
 		-l <link>   set link of merged channel
+		-D          delete pubDate elements of items
 
 - `onerss --help`
 
