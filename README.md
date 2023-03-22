@@ -36,7 +36,7 @@ The `onerss` program prints the merged feed to the standard output.
 
 	~~~
 	(
-		curl https://example.com/feed1.xml;
+		curl https://example.com/feed1.xml
 		cat feed2.xml
 	) | onerss
 	~~~
@@ -61,7 +61,7 @@ The `onerss` program prints the merged feed to the standard output.
 
 	~~~
 	(
-		onerss -t Name1 feed1.xml;
+		onerss -t Name1 feed1.xml
 		curl https://example.com/feed2.xml | onerss -t Name2
 
 	) | onerss -pt 'Merged News'
@@ -78,7 +78,7 @@ The `onerss` program prints the merged feed to the standard output.
 
 	~~~
 	(
-		curl https://example.com/atom-feed.xml | atom2rss;
+		curl https://example.com/atom-feed.xml | atom2rss
 		cat rss-feed.xml
 	) | onerss
 	~~~
@@ -88,9 +88,7 @@ Installation
 
 Runtime dependencies: 
 
-- W3C's [`html-xml-utils`](https://www.w3.org/Tools/HTML-XML-utils/)
-
-	Specifically, OneRSS calls the `hxpipe` and `hxunpipe` programs of *html-xml-utils*.
+- W3C's [HTML-XML-utils](https://www.w3.org/Tools/HTML-XML-utils/)
 
 Install OneRSS by the following commands:
 

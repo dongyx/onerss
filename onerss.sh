@@ -28,6 +28,49 @@ Copyright (c) 2023 $author
 .
 }
 
+# remove attributes, comments, processing instructions, prologs,
+# and self-closed elements in hxpiped xml
+cleanxml()
+{
+	grep -v '^[A*?!|]' "$@"
+}
+
+# remain only wanted elements in hxpiped-cleanxmled rss
+cleanrss()
+{
+	awk '
+		function join(a,	i, s) {
+			for (i = 0; i < n; i++)
+				s = s a[i]
+			return s
+		}
+		BEGIN {
+			split(	"<rss><channel><title>\n" \
+				"<rss><channel><item><title>\n" \
+				"<rss><channel><item><link>\n" \
+				"<rss><channel><item><description>\n" \
+				"<rss><channel><item><guid>\n" \
+				"<rss><channel><item><pubDate>\n" \
+				"<rss><channel><item><author>\n",
+				allow)
+		}
+		/^\(/ {
+			stack[n++] = "<" substr($0, 2) ">"
+		}
+		{
+			path = join(stack)
+			for (i in allow)
+				if (index(allow[i], path) == 1) {
+					print
+					break
+				}
+		}
+		/^\)/ {
+			n--
+		}
+	' "$@"
+}
+
 [ "$1" = "--help" ] && { help; exit 0;}
 [ "$1" = "--version" ] && { pversion; exit 0;}
 ch_title="OneRSS"
@@ -45,26 +88,35 @@ while getopts pt:d:l: opt; do
 done
 shift $((OPTIND - 1))
 
-preproc=hxpipe
-d=''
+d=$(mktemp -d)
 if [ $# -eq 0 ]; then
-	d=$(mktemp -d)
-	preproc=cat
-	n=$(hxpipe | awk -v "d=$d" '
-		BEGIN { n = 0 }
-		/^\(channel$/ { if (n++ > 0) close (d"/"n)}
-		/^\(channel$/, /^\)channel$/ { print >> (d"/"n) }
-		END { print n }
+	n=$(hxpipe | cleanxml | cleanrss | awk -v "d=$d" '
+		BEGIN {
+			n = 0
+		}
+		/^\(rss$/ {
+			if (n++ > 0)
+				close (d "/" n)
+		}
+		{
+			print >> (d"/"n)
+		}
+		END {
+			print n
+		}
 	')
-	set -- $(seq $n | xargs printf " $d/%s")
+else
+	n=0
+	for file; do
+		<"$file" hxpipe | cleanxml | cleanrss >"$d/$((++n))"
+	done
 fi
+set -- $(seq $n | xargs printf " $d/%s")
 
 (
 cat <<.
 ?xml version="1.0" encoding="UTF-8"?
 Aversion CDATA 2.0
-Axmlns:atom CDATA http://www.w3.org/2005/Atom
-Axmlns:sy CDATA http://purl.org/rss/1.0/modules/syndication/
 (rss
 (channel
 (title
@@ -82,22 +134,20 @@ Axmlns:sy CDATA http://purl.org/rss/1.0/modules/syndication/
 .
 
 for file; do
-	chan="$("$preproc" "$file" |
-		awk '
-			/^\(/ { lvl++ }
-			/^\)/ { lvl-- }
-			/^\(title$/ { title = 1 }
-			/^\)title$/ { title = 0 }
-			title && lvl == 2 && /^-/ { print substr($0, 2); exit }
-		'
-	)"
-	"$preproc" "$file" |
-	awk '/^\(item$/, /^\)item$/' |
+	[ $prepend -eq 1 ] && chan="$(<"$file" awk '
+		/^\(/ { lvl++ }
+		/^\)/ { lvl-- }
+		/^\(title$/ { title = 1 }
+		/^\)title$/ { title = 0 }
+		title && lvl == 3 && /^-/ { print substr($0, 2); exit }
+	')"
+	<"$file" awk '/^\(item$/, /^\)item$/' |
 	awk -v chan="$chan" -v prepend="$prepend" '
 		/^\(title$/ { title = 1 }
 		/^\)title$/ { title = 0 }
 		title && prepend && /^-/ { $0 = "-" chan ": " substr($0, 2) }
-		1
+		/\(guid/ { print "AisPermaLink CDATA false" }
+		{ print }
 	'
 done
 
@@ -108,4 +158,4 @@ cat <<.
 .
 ) | hxunpipe
 
-[ -n "$d" ] && rm -rf "$d"
+rm -rf "$d"
