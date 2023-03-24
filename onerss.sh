@@ -92,7 +92,7 @@ while getopts pct:d:l: opt; do
 done
 shift $((OPTIND - 1))
 
-d=$(mktemp -d)
+d="$(mktemp -d)"
 if [ $# -eq 0 ]; then
 	n=$(hxpipe | cleanxml | cleanrss | awk -v "d=$d" '
 		BEGIN {
@@ -115,7 +115,7 @@ else
 		<"$file" hxpipe | cleanxml | cleanrss >"$d/$((++n))"
 	done
 fi
-set -- $(seq $n | xargs printf " $d/%s")
+set -- $(seq "$n" | xargs printf " $d/%s")
 
 (
 cat <<.
