@@ -120,7 +120,6 @@ Usage
 		-t <title>  set title of merged channel
 		-d <desc>   set description of merged channel
 		-l <link>   set link of merged channel
-		-D          delete pubDate elements of items
 
 - `onerss --help`
 
