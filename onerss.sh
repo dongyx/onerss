@@ -14,10 +14,10 @@ Options:
 .
 	column -ts'	' <<. | awk '{print "\t" $0}'
 -p	prepend channel title to item title
+-c	set item category to channel title
 -t <title>	set title of merged channel
 -d <desc>	set description of merged channel
 -l <link>	set link of merged channel
--D	delete pubDate elements of items
 .
 }
 
@@ -82,9 +82,11 @@ ch_desc="Merged Channel"
 ch_link="https://github.com/dongyx/onerss"
 prepend=0
 nodate=0
-while getopts pt:d:l:D opt; do
+setcateg=0
+while getopts pct:d:l: opt; do
 	case $opt in
 	p)	prepend=1;;
+	c)	setcateg=1;;
 	t)	ch_title="$OPTARG";;
 	d)	ch_desc="$OPTARG";;
 	l)	ch_link="$OPTARG";;
@@ -140,19 +142,22 @@ Aversion CDATA 2.0
 .
 
 for file; do
-	[ $prepend -eq 1 ] && chan="$(<"$file" awk '
+	chan="$(<"$file" awk '
 		/^\(/ { lvl++ }
 		/^\)/ { lvl-- }
 		/^\(title$/ { title = 1 }
 		/^\)title$/ { title = 0 }
-		title && lvl == 3 && /^-/ { print substr($0, 2); exit }
+		title && lvl == 3 && /^-/ { print; exit }
 	')"
 	<"$file" awk '/^\(item$/, /^\)item$/' |
-	awk -v chan="$chan" -v prepend="$prepend" '
+	awk -v chan="$chan" -v prepend="$prepend" -v setcateg="$setcateg" '
 		/^\(title$/ { title = 1 }
 		/^\)title$/ { title = 0 }
-		title && prepend && /^-/ { $0 = "-" chan ": " substr($0, 2) }
+		title && prepend && /^-/ { $0 = chan ": " substr($0, 2) }
 		/\(guid/ { print "AisPermaLink CDATA false" }
+		setcateg && /^\)item$/ {
+			print "(category\n" chan "\n" ")category"
+		}
 		{ print }
 	'
 done

@@ -116,6 +116,7 @@ Usage
 	Options:
 
 		-p          prepend channel title to item title
+		-c          set item category to channel title
 		-t <title>  set title of merged channel
 		-d <desc>   set description of merged channel
 		-l <link>   set link of merged channel
