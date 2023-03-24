@@ -39,24 +39,22 @@ cleanxml()
 # remain only wanted elements in hxpiped-cleanxmled rss
 cleanrss()
 {
-	awk -v nodate="$nodate" '
+	awk '
 		function join(a,	i, s) {
 			for (i = 0; i < n; i++)
 				s = s a[i]
 			return s
 		}
 		BEGIN {
-			allowpaths = \
+			split( \
 				"<rss><channel><title>\n" \
 				"<rss><channel><item><title>\n" \
 				"<rss><channel><item><link>\n" \
 				"<rss><channel><item><description>\n" \
 				"<rss><channel><item><guid>\n" \
-				"<rss><channel><item><author>\n"
-			if (!nodate)
-				allowpaths = allowpaths \
-					"<rss><channel><item><pubDate>\n"
-			split(allowpaths, allow)
+				"<rss><channel><item><author>\n" \
+				"<rss><channel><item><pubDate>",
+				allow)
 		}
 		/^\(/ {
 			stack[n++] = "<" substr($0, 2) ">"
@@ -81,7 +79,6 @@ ch_title="OneRSS"
 ch_desc="Merged Channel"
 ch_link="https://github.com/dongyx/onerss"
 prepend=0
-nodate=0
 setcateg=0
 while getopts pct:d:l: opt; do
 	case $opt in
@@ -90,7 +87,6 @@ while getopts pct:d:l: opt; do
 	t)	ch_title="$OPTARG";;
 	d)	ch_desc="$OPTARG";;
 	l)	ch_link="$OPTARG";;
-	D)	nodate=1;;
 	?)	help >&2; exit -- -1;;
 	esac
 done
