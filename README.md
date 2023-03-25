@@ -63,7 +63,6 @@ The `onerss` program prints the merged feed to the standard output.
 	(
 		onerss -t Name1 feed1.xml
 		curl https://example.com/feed2.xml | onerss -t Name2
-
 	) | onerss -pt 'Merged News'
 	~~~
 
@@ -77,7 +76,6 @@ The `onerss` program prints the merged feed to the standard output.
 	(
 		onerss -t GroupName1 feed1a.xml feed1b.xml
 		onerss -t GroupName2 feed2a.xml feed2b.xml
-
 	) | onerss -pt 'Merged News'
 	~~~
 
