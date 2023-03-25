@@ -1,7 +1,7 @@
 OneRSS
 ======
 
-OneRSS is a Unix command-line project which merges multiple RSS feeds into one.
+OneRSS is a Unix command-line project which merges multiple RSS 2.0 feeds into one.
 
 OneRSS aims to provide most functions with fewest options.
 
