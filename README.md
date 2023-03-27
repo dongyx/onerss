@@ -5,94 +5,12 @@ OneRSS is a Unix command-line project which merges multiple RSS 2.0 feeds into o
 
 OneRSS aims to provide most functions with fewest options.
 
-* [Examples](#examples)
 * [Installation](#installation)
 * [Usage](#usage)
-
-Examples
-========
-
-The `onerss` program prints the merged feed to the standard output.
-
-- Merge local feeds
-
-	~~~
-	onerss feed1.xml feed2.xml
-	~~~
-
-	or
-
-	~~~
-	cat feed1.xml feed2.xml | onerss
-	~~~
-
-- Merge remote feeds
-
-	~~~
-	curl https://example.com/feed1.xml https://example.com/feed2.xml | onerss
-	~~~
-
-- Merge mixed feeds
-
-	~~~
-	(
-		curl https://example.com/feed1.xml
-		cat feed2.xml
-	) | onerss
-	~~~
-
-- Specify the title of the merged feed by `-t`
-	
-	~~~
-	onerss -t 'Merged News' feed1.xml feed2.xml feed3.xml
-	~~~
-
-- Prepend sub-feed titles to item titles by `-p`
-
-	~~~
-	onerss -p feed1.xml feed2.xml
-	~~~
-
-- Rename sub-feeds
-
-	As described above, if `onerss` is called with the `-p` option, sub-feed titles will be prepended to item titles in the merged feed.
-	However, sometimes we want to change sub-feed titles.
-	The following snippet demonstrates the approach.
-
-	~~~
-	(
-		onerss -t Name1 feed1.xml
-		curl https://example.com/feed2.xml | onerss -t Name2
-	) | onerss -pt 'Merged News'
-	~~~
-
-	**Explanation:** The `onerss` program provides the `-t` option to set the title of the merged feed.
-	Thus applying `onerss` to a single feed with the `-t` option renames the feed.
-	Then we pipe renamed feeds to another `onerss` process for merging.
-
-- Rename sub-feeds by group
-
-	~~~
-	(
-		onerss -t GroupName1 feed1a.xml feed1b.xml
-		onerss -t GroupName2 feed2a.xml feed2b.xml
-	) | onerss -pt 'Merged News'
-	~~~
-
-- Merge Atom feeds and RSS feeds
-
-	The `onerss` program doesn't support Atom naively.
-	However, we could pipe a Atom-to-RSS program[^atom2rss] to `onerss`.
-
-	~~~
-	(
-		curl https://example.com/atom-feed.xml | atom2rss
-		cat rss-feed.xml
-	) | onerss
-	~~~
+* [Documentation](#documentation)
 
 Installation
-============
+------------
 
 Runtime dependencies: 
 
@@ -106,8 +24,7 @@ Install OneRSS by the following commands:
 By default, OneRSS is installed to `/usr/local`.
 
 Usage
-=====
-
+-----
 
 - `onerss [options] [file...]`
 
@@ -127,4 +44,9 @@ Usage
 
 	Print the version
 
-[^atom2rss]: The `atom2rss` utility in the snippet is a simple shell wrapper of Kornel's [`atom2rss.xsl`](https://github.com/kornelski/atom2rss).
+Documentation
+-------------
+
+The technical report is served at <<https://www.dyx.name/notes/onerss.html>>.
+It contains a lot of examples,
+from the simplest merging task to the most complicated one.
