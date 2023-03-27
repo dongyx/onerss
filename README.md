@@ -47,6 +47,6 @@ Usage
 Documentation
 -------------
 
-The technical report is served at <<https://www.dyx.name/notes/onerss.html>>.
+See <<https://www.dyx.name/notes/onerss.html>>.
 It contains a lot of examples,
 from the simplest merging task to the most complicated one.
