@@ -1,9 +1,9 @@
-OneRSS
+onerss
 ======
 
-OneRSS is a Unix command-line project which merges multiple RSS 2.0 feeds into one.
+`onerss` is a Unix command-line project which merges multiple RSS 2.0 feeds into one.
 
-OneRSS aims to provide most functions with fewest options.
+`onerss` aims to provide most functions with fewest options.
 
 * [Installation](#installation)
 * [Usage](#usage)
@@ -16,12 +16,12 @@ Runtime dependencies:
 
 - W3C's [HTML-XML-utils](https://www.w3.org/Tools/HTML-XML-utils/)
 
-Install OneRSS by the following commands:
+Install `onerss` by the following commands:
 
 	make
 	sudo make install
 
-By default, OneRSS is installed to `/usr/local`.
+By default, `onerss` is installed to `/usr/local`.
 
 Usage
 -----
